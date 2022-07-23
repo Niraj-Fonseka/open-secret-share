@@ -1,0 +1,3 @@
+.gnupg 
+
+how to add a programatically generated gpg key to the public keyring

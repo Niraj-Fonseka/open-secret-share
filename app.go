@@ -14,8 +14,11 @@ import (
 	"golang.org/x/crypto/openpgp/packet"
 )
 
-//helpers https://gist.github.com/ayubmalik/a83ee23c7c700cdce2f8c5bf5f2e9f20
-
+/*
+helpers
+https://gist.github.com/ayubmalik/a83ee23c7c700cdce2f8c5bf5f2e9f20 <- using asc
+https://gist.github.com/stuart-warren/93750a142d3de4e8fdd2 <- using gpg ( we using this now )
+*/
 func main() {
 	trydecrypt()
 }
@@ -35,6 +38,7 @@ func generatekeys() {
 		fmt.Printf("Something went wrong: %v", err)
 		return
 	}
+	fmt.Println("getting here")
 	fmt.Printf("%s\n", output)
 
 	output, err = key.ArmorPrivate(&config)
@@ -42,6 +46,8 @@ func generatekeys() {
 		fmt.Printf("Something went wrong: %v", err)
 		return
 	}
+
+	fmt.Println("getting here")
 	fmt.Printf("%s\n", output)
 
 	ioutil.WriteFile("pub.gpg", key.Keyring(), 0666)
@@ -58,6 +64,8 @@ func trydecrypt() {
 		return
 	}
 
+	fmt.Println("read the pub key")
+
 	f, err := os.Open(fileToEnc)
 	if err != nil {
 		fmt.Println(err)
@@ -70,6 +78,7 @@ func trydecrypt() {
 		fmt.Println(err)
 		return
 	}
+
 	defer dst.Close()
 	encrypt([]*openpgp.Entity{recipient}, nil, f, dst)
 }
