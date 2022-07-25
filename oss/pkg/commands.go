@@ -10,7 +10,7 @@ var Root = &cobra.Command{
 	Long:  `A longer description that spans multiple lines and likely contains`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: Test,
 }
 
 var Init = &cobra.Command{
