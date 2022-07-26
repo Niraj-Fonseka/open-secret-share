@@ -3,10 +3,13 @@ package cmd
 import (
 	"context"
 	"flag"
-	"grpc-go"
-	"grpc-go/credentials/insecure"
 	"log"
 	"time"
+
+	pb "open-secret-share/oss/protobuf"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/spf13/cobra"
 )
