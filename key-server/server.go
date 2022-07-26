@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 
-	pb "open-secret-share/protobuf"
+	pb "open-secret-share/key-server/protobuf"
 
 	"google.golang.org/grpc"
 )
