@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 
+	"open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 
 	"google.golang.org/grpc"
@@ -24,6 +25,8 @@ type server struct {
 // SayHello implements helloworld.GreeterServer
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
+	storage := pkg.NewStorageClient()
+	storage.Upload("fonseka.live@gmail.com", []byte(in.GetName()))
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 

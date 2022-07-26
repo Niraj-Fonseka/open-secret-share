@@ -16,7 +16,7 @@ type Storage struct {
 	bkt    *storage.BucketHandle
 }
 
-func NewStorageClient(bucketname string) *Storage {
+func NewStorageClient() *Storage {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -27,7 +27,7 @@ func NewStorageClient(bucketname string) *Storage {
 
 	return &Storage{
 		ctx:    ctx,
-		client: &client,
+		client: client,
 		bkt:    bkt,
 	}
 }
@@ -43,7 +43,7 @@ func (s *Storage) Upload(userID string, pubkey []byte) error {
 	defer cancel()
 
 	// Upload an object with storage.Writer.
-	wc := s.client.Bucket(s.bkt).Object(userID + ".gpg").NewWriter(ctx)
+	wc := s.bkt.Object(userID + ".gpg").NewWriter(ctx)
 	wc.ChunkSize = 0 // note retries are not supported for chunk size 0.
 
 	if _, err := io.Copy(wc, buf); err != nil {
