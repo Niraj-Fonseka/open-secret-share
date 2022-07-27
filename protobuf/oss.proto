@@ -22,6 +22,7 @@ option go_package = "open-secret-share/protobuf";
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc Initialize (InitializeRequest) returns (InitializeResponse) {}
 }
 
 // The request message containing the user's name.
@@ -32,5 +33,12 @@ message HelloRequest {
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
-  bytes data = 2;
+}
+
+message InitializeRequest {
+  bytes pubkey = 1;
+}
+
+message InitializeResponse {
+  string message = 1;
 }

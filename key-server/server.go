@@ -26,8 +26,18 @@ type server struct {
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	log.Printf("Received: %v", in.GetName())
 	storage := pkg.NewStorageClient()
-	storage.Upload("fonseka.live@gmail.com", []byte(in.GetName()))
+	storage.Upload("fonseka_live_gmail", []byte(in.GetName())) //replace all special characters with underscores
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
+}
+
+func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
+	pubKey := in.GetPubkey()
+	storage := pkg.NewStorageClient()
+	err := storage.Upload("fonseka_live_gmail", pubKey)
+	if err != nil {
+		return &pb.InitializeResponse{}, err
+	}
+	return &pb.InitializeResponse{Message: "success"}, err
 }
 
 func main() {

@@ -10,3 +10,5 @@ cp:
 	cp oss_grpc.pb.go ./../key-server/protobuf/oss_grpc.pb.go
 	cp oss.pb.go ./../oss/client/protobuf/oss.pb.go
 	cp oss_grpc.pb.go ./../oss/client/protobuf/oss_grpc.pb.go
+	cp oss.pb.go ./../oss/protobuf/oss.pb.go
+	cp oss_grpc.pb.go ./../oss/protobuf/oss_grpc.pb.go

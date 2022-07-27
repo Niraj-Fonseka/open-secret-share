@@ -24,7 +24,7 @@ var (
 )
 
 func InitializeApp(cmd *cobra.Command, args []string) {
-	log.Println("Generate Key Pair...")
+	log.Println("Initializing app")
 	GenerateKeyPair()
 }
 
@@ -37,11 +37,12 @@ func Test(cmd *cobra.Command, args []string) {
 	}
 	defer conn.Close()
 	c := pb.NewGreeterClient(conn)
+	pubkey := GenerateKeyPair()
 
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: *name})
+	r, err := c.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubkey})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
