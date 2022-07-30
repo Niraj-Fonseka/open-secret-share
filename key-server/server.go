@@ -44,6 +44,18 @@ func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 
 }
 
+func (s *server) Recieve(ctx context.Context, in *pb.RecieveRequest) (*pb.RecieveResponse, error) {
+	messageID := in.GetMessageId()
+
+	data, found := s.Cache.Get(messageID)
+
+	if !found {
+		return &pb.RecieveResponse{}, fmt.Errorf("no item by that id")
+	}
+
+	return &pb.RecieveResponse{Data: data}, nil
+}
+
 func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb.GetPubKeyResponse, error) {
 	log.Println("Get the pub key for the user : ", in.GetUsername())
 	username := in.GetUsername()

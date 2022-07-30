@@ -51,12 +51,12 @@ message GetPubKeyResponse {
 }
 
 message RecieveRequest {
-  string username = 1;
+  string message_id = 1;
 }
 
 
 message RecieveResponse {
-  bytes pubkey = 1;
+  bytes data = 1;
 }
 
 // The response message containing the greetings
