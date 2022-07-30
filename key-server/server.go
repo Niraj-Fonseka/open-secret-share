@@ -30,6 +30,19 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
 }
 
+func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse, error) {
+	log.Println("Send to : ", in.GetUserID())
+	storage := pkg.NewStorageClient()
+	data, err := storage.Download("fonseka_live_gmail")
+
+	if err != nil {
+		return &pb.SendResponse{}, err
+	}
+
+	return &pb.SendResponse{Pubkey: data}, nil
+
+}
+
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
 	storage := pkg.NewStorageClient()

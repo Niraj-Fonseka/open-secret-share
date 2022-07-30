@@ -68,6 +68,25 @@ func SendSecret(cmd *cobra.Command, args []string) {
 		return
 	}
 
+	username := sender
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := c.Send(ctx, &pb.SendRequest{UserID: username})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+
+	pubKeyRecived := r.GetPubkey()
+
+	fmt.Println("pub key recieved : ", pubKeyRecived)
 }
 
 func Test(cmd *cobra.Command, args []string) {

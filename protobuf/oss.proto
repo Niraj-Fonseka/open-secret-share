@@ -23,7 +23,8 @@ service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc Initialize (InitializeRequest) returns (InitializeResponse) {}
-  rpc Recieve(RecieveRequest) returns (RecieveResponse) {}
+  rpc Recieve(RecieveRequest) returns (RecieveResponse) {} 
+  rpc Send(SendRequest) returns (SendResponse) {}
 }
 
 // The request message containing the user's name.
@@ -52,4 +53,12 @@ message InitializeRequest {
 
 message InitializeResponse {
   string message = 1;
+}
+
+message SendRequest {
+  string userID = 1;
+}
+
+message SendResponse {
+  bytes pubkey = 1;
 }

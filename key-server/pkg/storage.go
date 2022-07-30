@@ -3,6 +3,7 @@ package pkg
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"time"
@@ -77,4 +78,7 @@ func (s *Storage) Download(userID string) ([]byte, error) {
 		names = append(names, attrs.Name)
 	}
 	defer cancel()
+
+	fmt.Println("objects : ", names)
+	return []byte{}, nil
 }
