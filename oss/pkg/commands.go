@@ -15,6 +15,12 @@ var Root = &cobra.Command{
 
 var Init = &cobra.Command{
 	Use:   "init",
-	Short: "generate a key pair",
+	Short: "generate a new key pair and initialize the app",
 	Run:   InitializeApp,
+}
+
+var Send = &cobra.Command{
+	Use:   "send",
+	Short: "send a message to a user",
+	Run:   SendSecret,
 }

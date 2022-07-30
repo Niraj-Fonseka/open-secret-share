@@ -55,23 +55,21 @@ func SendHandler(cmd *cobra.Command, args []string) {
 	//generate a uniuq  indentifier============================================================================================
 }
 
-func Test(cmd *cobra.Command, args []string) {
-	flag.Parse()
-	// Set up a connection to the server.
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
-	pubkey := GenerateKeyPair()
+func SendSecret(cmd *cobra.Command, args []string) {
+	log.Println("preparing to send a secret")
 
-	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := c.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubkey})
+	fmt.Println("args : ", args)
+
+	sender, err := cmd.Flags().GetString("to")
+
+	fmt.Println(cmd.Flags())
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Println(err)
+		return
 	}
-	log.Printf("Greeting: %s", r.GetMessage())
+
+}
+
+func Test(cmd *cobra.Command, args []string) {
+	log.Println("initialze command")
 }

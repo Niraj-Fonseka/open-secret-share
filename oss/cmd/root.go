@@ -21,4 +21,6 @@ func init() {
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.oss.yaml)")
 	pkg.Root.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	pkg.Root.AddCommand(pkg.Init)
+	pkg.Root.AddCommand(pkg.Send)
+	pkg.Send.Flags().String("to", "", "name of the sender")
 }

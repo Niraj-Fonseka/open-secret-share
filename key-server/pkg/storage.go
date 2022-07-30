@@ -8,6 +8,7 @@ import (
 	"time"
 
 	storage "cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
 )
 
 type Storage struct {
@@ -55,4 +56,25 @@ func (s *Storage) Upload(userID string, pubkey []byte) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) Download(userID string) ([]byte, error) {
+
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second*50)
+
+	query := &storage.Query{Prefix: userID}
+
+	var names []string
+	it := s.bkt.Objects(ctx, query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		names = append(names, attrs.Name)
+	}
+	defer cancel()
 }
