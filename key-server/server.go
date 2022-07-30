@@ -44,7 +44,7 @@ func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 
 }
 
-func (s *server) GetPubkey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb.GetPubKeyResponse, error) {
+func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb.GetPubKeyResponse, error) {
 	log.Println("Get the pub key for the user : ", in.GetUsername())
 	username := in.GetUsername()
 	storage := pkg.NewStorageClient()
@@ -65,6 +65,15 @@ func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.
 		return &pb.InitializeResponse{}, err
 	}
 	return &pb.InitializeResponse{Message: "success"}, err
+}
+
+func (s *server) Store(ctx context.Context, in *pb.StoreRequest) (*pb.StoreResponse, error) {
+	data := in.GetEncMessage()
+
+	messageID := s.Cache.Set(data)
+
+	s.Cache.DumpAllItems()
+	return &pb.StoreResponse{MessageId: messageID}, nil
 }
 
 func main() {

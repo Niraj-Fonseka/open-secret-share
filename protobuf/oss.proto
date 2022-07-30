@@ -24,8 +24,17 @@ service Greeter {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc Initialize (InitializeRequest) returns (InitializeResponse) {}
   rpc Recieve(RecieveRequest) returns (RecieveResponse) {} 
-  rpc Send(SendRequest) returns (SendResponse) {}
   rpc GetPublicKey(GetPubKeyRequest) returns (GetPubKeyResponse) {}
+  rpc Store(StoreRequest) returns (StoreResponse) {}
+}
+
+
+message StoreRequest {
+  bytes enc_message = 1;
+}
+
+message StoreResponse {
+  string message_id =1;
 }
 
 // The request message containing the user's name.
