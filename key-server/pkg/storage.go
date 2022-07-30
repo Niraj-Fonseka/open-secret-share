@@ -3,8 +3,8 @@ package pkg
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"time"
 
@@ -73,12 +73,22 @@ func (s *Storage) Download(userID string) ([]byte, error) {
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			return []byte{}, err
 		}
 		names = append(names, attrs.Name)
 	}
 	defer cancel()
 
-	fmt.Println("objects : ", names)
-	return []byte{}, nil
+	rc, err := s.bkt.Object(names[0]).NewReader(s.ctx)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer rc.Close()
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return slurp, nil
+
 }
