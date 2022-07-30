@@ -8,6 +8,7 @@ import (
 	"net"
 
 	"open-secret-share/key-server/pkg"
+	cache "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 
 	"google.golang.org/grpc"
@@ -20,6 +21,7 @@ var (
 // server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
+	Cache *cache.MemCache
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -38,9 +40,21 @@ func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse
 	if err != nil {
 		return &pb.SendResponse{}, err
 	}
-
 	return &pb.SendResponse{Pubkey: data}, nil
 
+}
+
+func (s *server) GetPubkey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb.GetPubKeyResponse, error) {
+	log.Println("Get the pub key for the user : ", in.GetUsername())
+	username := in.GetUsername()
+	storage := pkg.NewStorageClient()
+	data, err := storage.Download(username)
+
+	if err != nil {
+		return &pb.GetPubKeyResponse{}, err
+	}
+
+	return &pb.GetPubKeyResponse{Pubkey: data}, nil
 }
 
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
@@ -59,8 +73,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	cache := cache.NewMemCache()
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &server{})
+	greeterServer := &server{
+		Cache: cache,
+	}
+	pb.RegisterGreeterServer(s, greeterServer)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

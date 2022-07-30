@@ -27,6 +27,7 @@ type GreeterClient interface {
 	Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error)
 	Recieve(ctx context.Context, in *RecieveRequest, opts ...grpc.CallOption) (*RecieveResponse, error)
 	Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error)
+	GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error)
 }
 
 type greeterClient struct {
@@ -73,6 +74,15 @@ func (c *greeterClient) Send(ctx context.Context, in *SendRequest, opts ...grpc.
 	return out, nil
 }
 
+func (c *greeterClient) GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error) {
+	out := new(GetPubKeyResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.Greeter/GetPublicKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GreeterServer is the server API for Greeter service.
 // All implementations must embed UnimplementedGreeterServer
 // for forward compatibility
@@ -82,6 +92,7 @@ type GreeterServer interface {
 	Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error)
 	Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error)
 	Send(context.Context, *SendRequest) (*SendResponse, error)
+	GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -100,6 +111,9 @@ func (UnimplementedGreeterServer) Recieve(context.Context, *RecieveRequest) (*Re
 }
 func (UnimplementedGreeterServer) Send(context.Context, *SendRequest) (*SendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+}
+func (UnimplementedGreeterServer) GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 
@@ -186,6 +200,24 @@ func _Greeter_Send_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Greeter_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPubKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).GetPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.Greeter/GetPublicKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).GetPublicKey(ctx, req.(*GetPubKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -208,6 +240,10 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Send",
 			Handler:    _Greeter_Send_Handler,
+		},
+		{
+			MethodName: "GetPublicKey",
+			Handler:    _Greeter_GetPublicKey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
