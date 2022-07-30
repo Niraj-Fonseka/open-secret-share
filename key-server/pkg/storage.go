@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"io/ioutil"
 	"log"
 	"time"
 
 	storage "cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
 )
 
 type Storage struct {
@@ -16,7 +18,7 @@ type Storage struct {
 	bkt    *storage.BucketHandle
 }
 
-func NewStorageClient(bucketname string) *Storage {
+func NewStorageClient() *Storage {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -27,7 +29,7 @@ func NewStorageClient(bucketname string) *Storage {
 
 	return &Storage{
 		ctx:    ctx,
-		client: &client,
+		client: client,
 		bkt:    bkt,
 	}
 }
@@ -43,7 +45,7 @@ func (s *Storage) Upload(userID string, pubkey []byte) error {
 	defer cancel()
 
 	// Upload an object with storage.Writer.
-	wc := s.client.Bucket(s.bkt).Object(userID + ".gpg").NewWriter(ctx)
+	wc := s.bkt.Object(userID + ".gpg").NewWriter(ctx)
 	wc.ChunkSize = 0 // note retries are not supported for chunk size 0.
 
 	if _, err := io.Copy(wc, buf); err != nil {
@@ -55,4 +57,38 @@ func (s *Storage) Upload(userID string, pubkey []byte) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) Download(userID string) ([]byte, error) {
+
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second*50)
+
+	query := &storage.Query{Prefix: userID}
+
+	var names []string
+	it := s.bkt.Objects(ctx, query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return []byte{}, err
+		}
+		names = append(names, attrs.Name)
+	}
+	defer cancel()
+
+	rc, err := s.bkt.Object(names[0]).NewReader(s.ctx)
+	if err != nil {
+		return []byte{}, err
+	}
+	defer rc.Close()
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return slurp, nil
+
 }

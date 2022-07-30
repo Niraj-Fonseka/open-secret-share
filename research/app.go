@@ -36,6 +36,7 @@ func main() {
 	log.Println("Decrypted Secret:", decStr)
 }
 
+//need to take in a user data structure
 func generatekeys() {
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
 	key, err := gpgeez.CreateKey("JoeJoe", "test key", "joe@example.com", &config)
