@@ -29,32 +29,6 @@ func InitializeApp(cmd *cobra.Command, args []string) {
 	GenerateKeyPair()
 }
 
-func SendHandler(cmd *cobra.Command, args []string) {
-	log.Println("sending to ")
-	username := "fonseka_live"
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
-
-	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
-	r, err := c.Recieve(ctx, &pb.RecieveRequest{Username: username})
-	if err != nil {
-		log.Fatalf("could not greet: %v", err)
-	}
-
-	pubKeyRecived := r.GetPubkey()
-
-	fmt.Println("pub key : ", pubKeyRecived)
-	//encrypt the data file
-	//upload the encryptd data into memory
-	//generate a uniuq  indentifier============================================================================================
-}
-
 func SendSecret(cmd *cobra.Command, args []string) {
 	log.Println("preparing to send a secret")
 
@@ -77,11 +51,11 @@ func SendSecret(cmd *cobra.Command, args []string) {
 	c := pb.NewGreeterClient(conn)
 
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
 	log.Println("----- sending a request to the key-server ...")
-	r, err := c.Send(ctx, &pb.SendRequest{UserID: username})
+	r, err := c.GetPublicKey(ctx, &pb.GetPubKeyRequest{Username: username})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
@@ -99,13 +73,47 @@ func SendSecret(cmd *cobra.Command, args []string) {
 
 	log.Println("----- encrypted with the public key recived about to decrypt...")
 
-	decrypted, err := Decrypt(encrypted)
+	messageID, err := c.Store(ctx, &pb.StoreRequest{EncMessage: encrypted})
 
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
-	fmt.Println(decrypted)
+	fmt.Println(messageID)
+	// decrypted, err := Decrypt(encrypted)
+
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	// fmt.Println(decrypted)
+}
+
+func Recieve(cmd *cobra.Command, args []string) {
+	messageID, err := cmd.Flags().GetString("id")
+	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewGreeterClient(conn)
+
+	// Contact the server and print out its response.
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	defer cancel()
+
+	r, err := c.Recieve(ctx, &pb.RecieveRequest{MessageId: messageID})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+
+	encData := r.GetData()
+
+	decrypted, err := Decrypt(encData)
+
+	fmt.Println("Decrupted Message : ", decrypted)
+
 }
 
 func Test(cmd *cobra.Command, args []string) {

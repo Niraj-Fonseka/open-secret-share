@@ -26,7 +26,8 @@ type GreeterClient interface {
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error)
 	Recieve(ctx context.Context, in *RecieveRequest, opts ...grpc.CallOption) (*RecieveResponse, error)
-	Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error)
+	GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error)
+	Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error)
 }
 
 type greeterClient struct {
@@ -64,9 +65,18 @@ func (c *greeterClient) Recieve(ctx context.Context, in *RecieveRequest, opts ..
 	return out, nil
 }
 
-func (c *greeterClient) Send(ctx context.Context, in *SendRequest, opts ...grpc.CallOption) (*SendResponse, error) {
-	out := new(SendResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/Send", in, out, opts...)
+func (c *greeterClient) GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error) {
+	out := new(GetPubKeyResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.Greeter/GetPublicKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error) {
+	out := new(StoreResponse)
+	err := c.cc.Invoke(ctx, "/protobuf.Greeter/Store", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +91,8 @@ type GreeterServer interface {
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error)
 	Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error)
-	Send(context.Context, *SendRequest) (*SendResponse, error)
+	GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error)
+	Store(context.Context, *StoreRequest) (*StoreResponse, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -98,8 +109,11 @@ func (UnimplementedGreeterServer) Initialize(context.Context, *InitializeRequest
 func (UnimplementedGreeterServer) Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Recieve not implemented")
 }
-func (UnimplementedGreeterServer) Send(context.Context, *SendRequest) (*SendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
+func (UnimplementedGreeterServer) GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
+}
+func (UnimplementedGreeterServer) Store(context.Context, *StoreRequest) (*StoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 
@@ -168,20 +182,38 @@ func _Greeter_Recieve_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendRequest)
+func _Greeter_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPubKeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).Send(ctx, in)
+		return srv.(GreeterServer).GetPublicKey(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.Greeter/Send",
+		FullMethod: "/protobuf.Greeter/GetPublicKey",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).Send(ctx, req.(*SendRequest))
+		return srv.(GreeterServer).GetPublicKey(ctx, req.(*GetPubKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_Store_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StoreRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).Store(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protobuf.Greeter/Store",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).Store(ctx, req.(*StoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -206,8 +238,12 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Greeter_Recieve_Handler,
 		},
 		{
-			MethodName: "Send",
-			Handler:    _Greeter_Send_Handler,
+			MethodName: "GetPublicKey",
+			Handler:    _Greeter_GetPublicKey_Handler,
+		},
+		{
+			MethodName: "Store",
+			Handler:    _Greeter_Store_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
