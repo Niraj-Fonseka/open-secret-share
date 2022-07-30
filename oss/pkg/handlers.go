@@ -79,6 +79,8 @@ func SendSecret(cmd *cobra.Command, args []string) {
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	log.Println("----- sending a request to the key-server ...")
 	r, err := c.Send(ctx, &pb.SendRequest{UserID: username})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -87,6 +89,23 @@ func SendSecret(cmd *cobra.Command, args []string) {
 	pubKeyRecived := r.GetPubkey()
 
 	fmt.Println("pub key recieved : ", pubKeyRecived)
+
+	encrypted, err := Encrypt("hello this is a very shecrat", pubKeyRecived)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("----- encrypted with the public key recived about to decrypt...")
+
+	decrypted, err := Decrypt(encrypted)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(decrypted)
 }
 
 func Test(cmd *cobra.Command, args []string) {

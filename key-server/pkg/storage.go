@@ -41,7 +41,7 @@ func (s *Storage) Close() {
 func (s *Storage) Upload(userID string, pubkey []byte) error {
 	buf := bytes.NewBuffer(pubkey)
 
-	ctx, cancel := context.WithTimeout(s.ctx, time.Second*50)
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second*120)
 	defer cancel()
 
 	// Upload an object with storage.Writer.
@@ -61,7 +61,7 @@ func (s *Storage) Upload(userID string, pubkey []byte) error {
 
 func (s *Storage) Download(userID string) ([]byte, error) {
 
-	ctx, cancel := context.WithTimeout(s.ctx, time.Second*50)
+	ctx, cancel := context.WithTimeout(s.ctx, time.Second*120)
 
 	query := &storage.Query{Prefix: userID}
 
