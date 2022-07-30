@@ -24,12 +24,12 @@ func NewMemCache() *MemCache {
 	}
 }
 
-func (m *MemCache) Get(key string) ([]byte, bool) {
+func (m *MemCache) Get(key string) (string, bool) {
 	data, found := m.cache.Get(key)
-	return data.([]byte), found
+	return data.(string), found
 }
 
-func (m *MemCache) Set(value []byte) string {
+func (m *MemCache) Set(value string) string {
 
 	randomID := m.generateRandomID()
 	m.cache.Set(randomID, value, cache.DefaultExpiration)

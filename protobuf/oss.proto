@@ -30,7 +30,7 @@ service Greeter {
 
 
 message StoreRequest {
-  bytes enc_message = 1;
+  string enc_message = 1;
 }
 
 message StoreResponse {
@@ -56,7 +56,7 @@ message RecieveRequest {
 
 
 message RecieveResponse {
-  bytes data = 1;
+  string data = 1;
 }
 
 // The response message containing the greetings

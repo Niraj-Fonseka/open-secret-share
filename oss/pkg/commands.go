@@ -24,3 +24,9 @@ var Send = &cobra.Command{
 	Short: "send a message to a user",
 	Run:   SendSecret,
 }
+
+var RecieveCMD = &cobra.Command{
+	Use:   "recieve",
+	Short: "receive a message given id",
+	Run:   Recieve,
+}

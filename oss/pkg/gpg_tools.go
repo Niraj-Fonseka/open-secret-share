@@ -49,7 +49,7 @@ func GenerateKeyPair() []byte {
 	return pub
 }
 
-func Encrypt(data string, pubKey []byte) ([]byte, error) {
+func Encrypt(data string, pubKey []byte) (string, error) {
 	// Read in public key
 
 	publicKeyring := bytes.NewReader(pubKey)
@@ -58,35 +58,35 @@ func Encrypt(data string, pubKey []byte) ([]byte, error) {
 	// defer keyringFileBuffer.Close()
 	entityList, err := openpgp.ReadKeyRing(publicKeyring)
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
 	// encrypt string
 	buf := new(bytes.Buffer)
 	w, err := openpgp.Encrypt(buf, entityList, nil, nil, nil)
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 	_, err = w.Write([]byte(data))
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 	err = w.Close()
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
 
 	// Encode to base64
 	bytes, err := ioutil.ReadAll(buf)
 	if err != nil {
-		return []byte{}, err
+		return "", err
 	}
-	// encStr := base64.StdEncoding.EncodeToString(bytes)
+	encStr := base64.StdEncoding.EncodeToString(bytes)
 
-	// // Output encrypted/encoded string
-	// log.Println("Encrypted Secret:", encStr)
+	// Output encrypted/encoded string
+	log.Println("Encrypted Secret:", encStr)
 
-	return bytes, nil
+	return encStr, nil
 }
 
 func Decrypt(encryptedString string) (string, error) {
