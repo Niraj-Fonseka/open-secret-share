@@ -6,8 +6,11 @@ require (
 	cloud.google.com/go/secretmanager v1.5.0
 	cloud.google.com/go/storage v1.22.1
 	github.com/gin-gonic/gin v1.8.1
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	google.golang.org/api v0.85.0
 	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad
+	google.golang.org/grpc v1.47.0
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -41,7 +44,5 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.47.0 // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
