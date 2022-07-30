@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/secretmanager v1.5.0
 	cloud.google.com/go/storage v1.22.1
 	github.com/gin-gonic/gin v1.8.1
+	github.com/google/uuid v1.1.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	google.golang.org/api v0.85.0
 	google.golang.org/genproto v0.0.0-20220617124728-180714bec0ad
@@ -25,7 +26,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/google/uuid v1.1.2 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
 	github.com/googleapis/go-type-adapters v1.0.0 // indirect
