@@ -71,8 +71,9 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
+	email := in.GetEmail()
 	storage := pkg.NewStorageClient()
-	err := storage.Upload("fonseka_live_gmail", pubKey)
+	err := storage.Upload(email, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{}, err
 	}
