@@ -67,9 +67,9 @@ func (c *Commands) InitializeCommands() *Commands {
 }
 
 func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
-	username := c.prompt.TriggerPrompt("username :")
-	email := c.prompt.TriggerPrompt("email :")
-	comment := c.prompt.TriggerPrompt("comment :")
+	username := c.prompt.TriggerPrompt("username")
+	email := c.prompt.TriggerPrompt("email")
+	comment := c.prompt.TriggerPrompt("comment")
 
 	pubKey := GenerateKeyPair(username, email, comment)
 
@@ -87,7 +87,7 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 
 func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 
-	receiver := c.prompt.TriggerPrompt("email :")
+	receiver := c.prompt.TriggerPrompt("email")
 	username := receiver
 
 	// Contact the server and print out its response.
@@ -110,7 +110,7 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("connection established successfully")
-	message := c.prompt.TriggerPrompt("message :")
+	message := c.prompt.TriggerPrompt("message")
 
 	encrypted, err := Encrypt(message, pubKeyRecived)
 
@@ -131,7 +131,7 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 }
 
 func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
-	messageID := c.prompt.TriggerPrompt("message id :")
+	messageID := c.prompt.TriggerPrompt("message id")
 
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)

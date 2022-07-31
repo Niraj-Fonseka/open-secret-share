@@ -12,11 +12,9 @@ import (
 func Execute() {
 
 	client := client.NewKeyServerClient()
+	defer client.ConnClose()
+
 	prompt := pkg.NewPrompt()
 	pkg.NewCommands(client, prompt).InitializeCommands()
-
-}
-
-func init() {
 
 }

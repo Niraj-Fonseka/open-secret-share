@@ -2,6 +2,7 @@ package client
 
 import (
 	"flag"
+	"os"
 
 	"google.golang.org/grpc"
 
@@ -16,11 +17,16 @@ type KeyServerClient struct {
 	conn   *grpc.ClientConn
 }
 
-var (
-	addr = flag.String("addr", "localhost:50051", "the address to connect to")
-)
-
 func NewKeyServerClient() *KeyServerClient {
+
+	serverEndpoint := os.Getenv("SERVER")
+
+	if serverEndpoint == "" {
+		log.Fatal("SERVER environment variable is not set")
+	}
+
+	addr := flag.String("addr", serverEndpoint, "key server address")
+
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
