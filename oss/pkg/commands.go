@@ -2,16 +2,14 @@ package pkg
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
+	"open-secret-share/oss/client"
 	pb "open-secret-share/oss/protobuf"
 	"os"
 	"time"
 
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Commands struct {
@@ -23,21 +21,9 @@ type Commands struct {
 	client     pb.GreeterClient
 }
 
-var (
-	addr = flag.String("addr", "localhost:50051", "the address to connect to")
-)
+func NewCommands(client *client.KeyServerClient, prompt *Prompt) *Commands {
 
-func NewCommands() *Commands {
-	prompt := NewPrompt()
-
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
-
-	return &Commands{prompt: prompt, client: c}
+	return &Commands{prompt: prompt, client: client.Client}
 }
 
 func (c *Commands) InitializeCommands() *Commands {
@@ -81,10 +67,9 @@ func (c *Commands) InitializeCommands() *Commands {
 }
 
 func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
-	log.Println("Initializing app")
-	username := c.prompt.TriggerPrompt("username :")
-	email := c.prompt.TriggerPrompt("email :")
-	comment := c.prompt.TriggerPrompt("comment :")
+	username := c.prompt.TriggerPrompt("username")
+	email := c.prompt.TriggerPrompt("email")
+	comment := c.prompt.TriggerPrompt("comment")
 
 	pubKey := GenerateKeyPair(username, email, comment)
 
@@ -101,31 +86,31 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 }
 
 func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
-	log.Println("preparing to send a secret")
 
-	receiver := c.prompt.TriggerPrompt("email :")
+	receiver := c.prompt.TriggerPrompt("email")
 	username := receiver
 
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
-	log.Println("----- sending a request to the key-server ...")
-	fmt.Println(c.client)
+	fmt.Print("----- establishing connection with the key server ----- ")
 	r, err := c.client.GetPublicKey(ctx, &pb.GetPubKeyRequest{Username: username})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		fmt.Printf("unable to establish connection with the server %v", err)
+
+		os.Exit(1)
 	}
 
 	pubKeyRecived := r.GetPubkey() //probably can return an error also. When the pub key isnt there
 
 	if len(pubKeyRecived) == 0 {
-		log.Printf("unable to find the public key of %s \n", receiver)
+		fmt.Printf("unable to find the public key of %s \n", receiver)
 		return
 	}
 
-	fmt.Println("Public Key Recieved ..")
-	message := c.prompt.TriggerPrompt("message :")
+	fmt.Println("connection established successfully")
+	message := c.prompt.TriggerPrompt("message")
 
 	encrypted, err := Encrypt(message, pubKeyRecived)
 
@@ -146,7 +131,7 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 }
 
 func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
-	messageID := c.prompt.TriggerPrompt("message id :")
+	messageID := c.prompt.TriggerPrompt("message id")
 
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
@@ -161,7 +146,7 @@ func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
 
 	decrypted, err := Decrypt(encData)
 
-	fmt.Println("Decrupted Message : ", decrypted)
+	fmt.Println(decrypted)
 
 }
 

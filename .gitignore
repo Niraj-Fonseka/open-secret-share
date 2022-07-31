@@ -1,2 +1,4 @@
 *.gpg
 *.json
+oss/oss
+.env
