@@ -38,14 +38,14 @@ func InitializeApp(cmd *cobra.Command, args []string) {
 	comment := getCommentPrompt()
 
 	fmt.Printf("Username : %s , email : %s , comment : %s \n", username, email, comment)
-	//GenerateKeyPair()
+	GenerateKeyPair(username, email, comment)
 }
 
 func getUsernamePrompt() string {
 	templates := &promptui.PromptTemplates{
 		Prompt:  "{{ . }} ",
 		Valid:   "{{ . | green }} ",
-		Success: "{{ . | bold }} ",
+		Success: "{{ . | blue }} ",
 	}
 
 	prompt := promptui.Prompt{

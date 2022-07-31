@@ -14,9 +14,9 @@ import (
 	"github.com/alokmenghrajani/gpgeez"
 )
 
-func GenerateKeyPair() []byte {
+func GenerateKeyPair(username, email, comment string) []byte {
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
-	key, err := gpgeez.CreateKey("JoeJoe", "test key", "joe@example.com", &config)
+	key, err := gpgeez.CreateKey(username, comment, email, &config)
 	if err != nil {
 		fmt.Printf("Something went wrong: %v", err)
 		return []byte{}
