@@ -14,9 +14,9 @@ import (
 	"github.com/alokmenghrajani/gpgeez"
 )
 
-func GenerateKeyPair() []byte {
+func GenerateKeyPair(username, email, comment string) []byte {
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
-	key, err := gpgeez.CreateKey("JoeJoe", "test key", "joe@example.com", &config)
+	key, err := gpgeez.CreateKey(username, comment, email, &config)
 	if err != nil {
 		fmt.Printf("Something went wrong: %v", err)
 		return []byte{}
@@ -91,7 +91,7 @@ func Encrypt(data string, pubKey []byte) (string, error) {
 
 func Decrypt(encryptedString string) (string, error) {
 
-	const passphrase = "test asdkey"
+	const passphrase = ""
 
 	// init some vars
 	var entity *openpgp.Entity
@@ -112,7 +112,6 @@ func Decrypt(encryptedString string) (string, error) {
 	// Get the passphrase and read the private key.
 	// Have not touched the encrypted string yet
 	passphraseByte := []byte(passphrase)
-	log.Println("Decrypting private key using passphrase")
 	entity.PrivateKey.Decrypt(passphraseByte)
 	for _, subkey := range entity.Subkeys {
 		subkey.PrivateKey.Decrypt(passphraseByte)

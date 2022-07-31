@@ -66,6 +66,7 @@ message HelloReply {
 
 message InitializeRequest {
   bytes pubkey = 1;
+  string email = 2;
 }
 
 message InitializeResponse {
