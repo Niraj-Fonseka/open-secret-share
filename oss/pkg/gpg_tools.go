@@ -81,9 +81,6 @@ func Encrypt(data string, pubKey []byte) (string, error) {
 	}
 	encStr := base64.StdEncoding.EncodeToString(bytes)
 
-	// Output encrypted/encoded string
-	log.Println("Encrypted Secret:", encStr)
-
 	return encStr, nil
 }
 
@@ -114,7 +111,6 @@ func Decrypt(encryptedString string) (string, error) {
 	for _, subkey := range entity.Subkeys {
 		subkey.PrivateKey.Decrypt(passphraseByte)
 	}
-	log.Println("Finished decrypting private key using passphrase")
 
 	// Decode the base64 string
 	dec, err := base64.StdEncoding.DecodeString(encryptedString)
