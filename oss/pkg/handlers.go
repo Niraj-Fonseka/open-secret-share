@@ -9,6 +9,7 @@ import (
 
 	pb "open-secret-share/oss/protobuf"
 
+	"github.com/manifoldco/promptui"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -24,9 +25,83 @@ var (
 	name = flag.String("name", defaultName, "Name to greet")
 )
 
+type pepper struct {
+	Name     string
+	HeatUnit int
+	Peppers  int
+}
+
 func InitializeApp(cmd *cobra.Command, args []string) {
 	log.Println("Initializing app")
-	GenerateKeyPair()
+	username := getUsernamePrompt()
+	email := getUserEmailPrompt()
+	comment := getCommentPrompt()
+
+	fmt.Printf("Username : %s , email : %s , comment : %s \n", username, email, comment)
+	//GenerateKeyPair()
+}
+
+func getUsernamePrompt() string {
+	templates := &promptui.PromptTemplates{
+		Prompt:  "{{ . }} ",
+		Valid:   "{{ . | green }} ",
+		Success: "{{ . | bold }} ",
+	}
+
+	prompt := promptui.Prompt{
+		Label:     "Username",
+		Templates: templates,
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		log.Fatalf("Prompt failed %v\n", err)
+	}
+
+	return result
+}
+
+func getUserEmailPrompt() string {
+	templates := &promptui.PromptTemplates{
+		Prompt:  "{{ . }} ",
+		Valid:   "{{ . | green }} ",
+		Success: "{{ . | bold }} ",
+	}
+
+	prompt := promptui.Prompt{
+		Label:     "Email",
+		Templates: templates,
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		log.Fatalf("Prompt failed %v\n", err)
+	}
+
+	return result
+}
+
+func getCommentPrompt() string {
+	templates := &promptui.PromptTemplates{
+		Prompt:  "{{ . }} ",
+		Valid:   "{{ . | green }} ",
+		Success: "{{ . | bold }} ",
+	}
+
+	prompt := promptui.Prompt{
+		Label:     "Comment",
+		Templates: templates,
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		log.Fatalf("Prompt failed %v\n", err)
+	}
+
+	return result
 }
 
 func SendSecret(cmd *cobra.Command, args []string) {

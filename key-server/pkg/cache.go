@@ -26,7 +26,11 @@ func NewMemCache() *MemCache {
 
 func (m *MemCache) Get(key string) (string, bool) {
 	data, found := m.cache.Get(key)
-	return data.(string), found
+	if found {
+		return data.(string), found
+	}
+
+	return "", found
 }
 
 func (m *MemCache) Set(value string) string {
