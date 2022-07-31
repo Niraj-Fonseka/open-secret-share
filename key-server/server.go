@@ -7,9 +7,9 @@ import (
 	"log"
 	"net"
 
-	"open-secret-share/key-server/pkg"
 	cache "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
+	"open-secret-share/key-server/storageproviders"
 
 	"google.golang.org/grpc"
 )
@@ -21,46 +21,24 @@ var (
 // server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedGreeterServer
-	Cache *cache.MemCache
-}
-
-// SayHello implements helloworld.GreeterServer
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.GetName())
-	storage := pkg.NewStorageClient()
-	storage.Upload("fonseka_live_gmail", []byte(in.GetName())) //replace all special characters with underscores
-	return &pb.HelloReply{Message: "Hello " + in.GetName()}, nil
-}
-
-func (s *server) Send(ctx context.Context, in *pb.SendRequest) (*pb.SendResponse, error) {
-	log.Println("Send to : ", in.GetUserID())
-	storage := pkg.NewStorageClient()
-	data, err := storage.Download("fonseka_live_gmail")
-
-	if err != nil {
-		return &pb.SendResponse{}, err
-	}
-	return &pb.SendResponse{Pubkey: data}, nil
-
+	Cache   *cache.MemCache
+	Storage storageproviders.StorageProvider
 }
 
 func (s *server) Recieve(ctx context.Context, in *pb.RecieveRequest) (*pb.RecieveResponse, error) {
 	messageID := in.GetMessageId()
-
 	data, found := s.Cache.Get(messageID)
 
 	if !found {
-		return &pb.RecieveResponse{}, fmt.Errorf("no item by that id")
+		return &pb.RecieveResponse{}, fmt.Errorf("no message by that id")
 	}
 
 	return &pb.RecieveResponse{Data: data}, nil
 }
 
 func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb.GetPubKeyResponse, error) {
-	log.Println("Get the pub key for the user : ", in.GetUsername())
 	username := in.GetUsername()
-	storage := pkg.NewStorageClient()
-	data, err := storage.Download(username)
+	data, err := s.Storage.Download(username)
 
 	if err != nil {
 		return &pb.GetPubKeyResponse{}, err
@@ -72,10 +50,9 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
 	email := in.GetEmail()
-	storage := pkg.NewStorageClient()
-	err := storage.Upload(email, pubKey)
+	err := s.Storage.Upload(email, pubKey)
 	if err != nil {
-		return &pb.InitializeResponse{}, err
+		return &pb.InitializeResponse{Message: "failed"}, err
 	}
 	return &pb.InitializeResponse{Message: "success"}, err
 }
@@ -85,7 +62,6 @@ func (s *server) Store(ctx context.Context, in *pb.StoreRequest) (*pb.StoreRespo
 
 	messageID := s.Cache.Set(data)
 
-	s.Cache.DumpAllItems()
 	return &pb.StoreResponse{MessageId: messageID}, nil
 }
 
@@ -97,10 +73,13 @@ func main() {
 	}
 
 	cache := cache.NewMemCache()
+	storage := storageproviders.NewGoogleStorageClient()
 	s := grpc.NewServer()
 	greeterServer := &server{
-		Cache: cache,
+		Cache:   cache,
+		Storage: storage,
 	}
+
 	pb.RegisterGreeterServer(s, greeterServer)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
