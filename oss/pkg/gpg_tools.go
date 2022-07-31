@@ -54,8 +54,6 @@ func Encrypt(data string, pubKey []byte) (string, error) {
 
 	publicKeyring := bytes.NewReader(pubKey)
 
-	// keyringFileBuffer, _ := os.Open(publicKeyring)
-	// defer keyringFileBuffer.Close()
 	entityList, err := openpgp.ReadKeyRing(publicKeyring)
 	if err != nil {
 		return "", err
@@ -91,7 +89,7 @@ func Encrypt(data string, pubKey []byte) (string, error) {
 
 func Decrypt(encryptedString string) (string, error) {
 
-	const passphrase = ""
+	const passphrase = "" //go/crypto doesn't support passpharse yet
 
 	// init some vars
 	var entity *openpgp.Entity
