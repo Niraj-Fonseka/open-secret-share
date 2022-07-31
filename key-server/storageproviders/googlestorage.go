@@ -3,6 +3,7 @@ package storageproviders
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -79,6 +80,9 @@ func (s *GoogleStorage) Download(userID string) ([]byte, error) {
 	}
 	defer cancel()
 
+	if len(names) == 0 {
+		return []byte{}, fmt.Errorf("reciever not found ")
+	}
 	rc, err := s.bkt.Object(names[0]).NewReader(s.ctx)
 	if err != nil {
 		return []byte{}, err
