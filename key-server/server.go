@@ -20,7 +20,7 @@ var (
 
 // server is used to implement helloworld.GreeterServer.
 type server struct {
-	pb.UnimplementedGreeterServer
+	pb.UnimplementedOpenSecretShareServer
 	Cache   *cache.MemCache
 	Storage storageproviders.StorageProvider
 }
@@ -75,12 +75,12 @@ func main() {
 	cache := cache.NewMemCache()
 	storage := storageproviders.NewGoogleStorageClient()
 	s := grpc.NewServer()
-	greeterServer := &server{
+	ossServer := &server{
 		Cache:   cache,
 		Storage: storage,
 	}
 
-	pb.RegisterGreeterServer(s, greeterServer)
+	pb.RegisterOpenSecretShareServer(s, ossServer)
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

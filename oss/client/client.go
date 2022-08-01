@@ -13,7 +13,7 @@ import (
 )
 
 type KeyServerClient struct {
-	Client pb.GreeterClient
+	Client pb.OpenSecretShareClient
 	conn   *grpc.ClientConn
 }
 
@@ -31,7 +31,7 @@ func NewKeyServerClient() *KeyServerClient {
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	c := pb.NewGreeterClient(conn)
+	c := pb.NewOpenSecretShareClient(conn)
 
 	return &KeyServerClient{Client: c, conn: conn}
 }
