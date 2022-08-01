@@ -18,232 +18,194 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// GreeterClient is the client API for Greeter service.
+// OpenSecretShareClient is the client API for OpenSecretShare service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GreeterClient interface {
-	// Sends a greeting
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+type OpenSecretShareClient interface {
 	Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error)
 	Recieve(ctx context.Context, in *RecieveRequest, opts ...grpc.CallOption) (*RecieveResponse, error)
 	GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error)
 	Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error)
 }
 
-type greeterClient struct {
+type openSecretShareClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
-	return &greeterClient{cc}
+func NewOpenSecretShareClient(cc grpc.ClientConnInterface) OpenSecretShareClient {
+	return &openSecretShareClient{cc}
 }
 
-func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/SayHello", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *greeterClient) Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error) {
+func (c *openSecretShareClient) Initialize(ctx context.Context, in *InitializeRequest, opts ...grpc.CallOption) (*InitializeResponse, error) {
 	out := new(InitializeResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/Initialize", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/protobuf.OpenSecretShare/Initialize", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *greeterClient) Recieve(ctx context.Context, in *RecieveRequest, opts ...grpc.CallOption) (*RecieveResponse, error) {
+func (c *openSecretShareClient) Recieve(ctx context.Context, in *RecieveRequest, opts ...grpc.CallOption) (*RecieveResponse, error) {
 	out := new(RecieveResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/Recieve", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/protobuf.OpenSecretShare/Recieve", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *greeterClient) GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error) {
+func (c *openSecretShareClient) GetPublicKey(ctx context.Context, in *GetPubKeyRequest, opts ...grpc.CallOption) (*GetPubKeyResponse, error) {
 	out := new(GetPubKeyResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/GetPublicKey", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/protobuf.OpenSecretShare/GetPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *greeterClient) Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error) {
+func (c *openSecretShareClient) Store(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*StoreResponse, error) {
 	out := new(StoreResponse)
-	err := c.cc.Invoke(ctx, "/protobuf.Greeter/Store", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/protobuf.OpenSecretShare/Store", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GreeterServer is the server API for Greeter service.
-// All implementations must embed UnimplementedGreeterServer
+// OpenSecretShareServer is the server API for OpenSecretShare service.
+// All implementations must embed UnimplementedOpenSecretShareServer
 // for forward compatibility
-type GreeterServer interface {
-	// Sends a greeting
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+type OpenSecretShareServer interface {
 	Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error)
 	Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error)
 	GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error)
 	Store(context.Context, *StoreRequest) (*StoreResponse, error)
-	mustEmbedUnimplementedGreeterServer()
+	mustEmbedUnimplementedOpenSecretShareServer()
 }
 
-// UnimplementedGreeterServer must be embedded to have forward compatible implementations.
-type UnimplementedGreeterServer struct {
+// UnimplementedOpenSecretShareServer must be embedded to have forward compatible implementations.
+type UnimplementedOpenSecretShareServer struct {
 }
 
-func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
-}
-func (UnimplementedGreeterServer) Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error) {
+func (UnimplementedOpenSecretShareServer) Initialize(context.Context, *InitializeRequest) (*InitializeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Initialize not implemented")
 }
-func (UnimplementedGreeterServer) Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error) {
+func (UnimplementedOpenSecretShareServer) Recieve(context.Context, *RecieveRequest) (*RecieveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Recieve not implemented")
 }
-func (UnimplementedGreeterServer) GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error) {
+func (UnimplementedOpenSecretShareServer) GetPublicKey(context.Context, *GetPubKeyRequest) (*GetPubKeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
 }
-func (UnimplementedGreeterServer) Store(context.Context, *StoreRequest) (*StoreResponse, error) {
+func (UnimplementedOpenSecretShareServer) Store(context.Context, *StoreRequest) (*StoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Store not implemented")
 }
-func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
+func (UnimplementedOpenSecretShareServer) mustEmbedUnimplementedOpenSecretShareServer() {}
 
-// UnsafeGreeterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GreeterServer will
+// UnsafeOpenSecretShareServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to OpenSecretShareServer will
 // result in compilation errors.
-type UnsafeGreeterServer interface {
-	mustEmbedUnimplementedGreeterServer()
+type UnsafeOpenSecretShareServer interface {
+	mustEmbedUnimplementedOpenSecretShareServer()
 }
 
-func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
-	s.RegisterService(&Greeter_ServiceDesc, srv)
+func RegisterOpenSecretShareServer(s grpc.ServiceRegistrar, srv OpenSecretShareServer) {
+	s.RegisterService(&OpenSecretShare_ServiceDesc, srv)
 }
 
-func _Greeter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GreeterServer).SayHello(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/protobuf.Greeter/SayHello",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).SayHello(ctx, req.(*HelloRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Greeter_Initialize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OpenSecretShare_Initialize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(InitializeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).Initialize(ctx, in)
+		return srv.(OpenSecretShareServer).Initialize(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.Greeter/Initialize",
+		FullMethod: "/protobuf.OpenSecretShare/Initialize",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).Initialize(ctx, req.(*InitializeRequest))
+		return srv.(OpenSecretShareServer).Initialize(ctx, req.(*InitializeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_Recieve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OpenSecretShare_Recieve_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RecieveRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).Recieve(ctx, in)
+		return srv.(OpenSecretShareServer).Recieve(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.Greeter/Recieve",
+		FullMethod: "/protobuf.OpenSecretShare/Recieve",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).Recieve(ctx, req.(*RecieveRequest))
+		return srv.(OpenSecretShareServer).Recieve(ctx, req.(*RecieveRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OpenSecretShare_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPubKeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).GetPublicKey(ctx, in)
+		return srv.(OpenSecretShareServer).GetPublicKey(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.Greeter/GetPublicKey",
+		FullMethod: "/protobuf.OpenSecretShare/GetPublicKey",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).GetPublicKey(ctx, req.(*GetPubKeyRequest))
+		return srv.(OpenSecretShareServer).GetPublicKey(ctx, req.(*GetPubKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_Store_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _OpenSecretShare_Store_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StoreRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).Store(ctx, in)
+		return srv.(OpenSecretShareServer).Store(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protobuf.Greeter/Store",
+		FullMethod: "/protobuf.OpenSecretShare/Store",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).Store(ctx, req.(*StoreRequest))
+		return srv.(OpenSecretShareServer).Store(ctx, req.(*StoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
+// OpenSecretShare_ServiceDesc is the grpc.ServiceDesc for OpenSecretShare service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Greeter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protobuf.Greeter",
-	HandlerType: (*GreeterServer)(nil),
+var OpenSecretShare_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "protobuf.OpenSecretShare",
+	HandlerType: (*OpenSecretShareServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Greeter_SayHello_Handler,
-		},
-		{
 			MethodName: "Initialize",
-			Handler:    _Greeter_Initialize_Handler,
+			Handler:    _OpenSecretShare_Initialize_Handler,
 		},
 		{
 			MethodName: "Recieve",
-			Handler:    _Greeter_Recieve_Handler,
+			Handler:    _OpenSecretShare_Recieve_Handler,
 		},
 		{
 			MethodName: "GetPublicKey",
-			Handler:    _Greeter_GetPublicKey_Handler,
+			Handler:    _OpenSecretShare_GetPublicKey_Handler,
 		},
 		{
 			MethodName: "Store",
-			Handler:    _Greeter_Store_Handler,
+			Handler:    _OpenSecretShare_Store_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
