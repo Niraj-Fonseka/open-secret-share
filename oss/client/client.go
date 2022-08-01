@@ -31,7 +31,7 @@ func NewKeyServerClient() *KeyServerClient {
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
-	c := pb.OpenSecretShareClient(conn)
+	c := pb.NewOpenSecretShareClient(conn)
 
 	return &KeyServerClient{Client: c, conn: conn}
 }

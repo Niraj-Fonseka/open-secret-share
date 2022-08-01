@@ -18,7 +18,7 @@ type Commands struct {
 	Init       *cobra.Command
 	RecieveCMD *cobra.Command
 	prompt     *Prompt
-	client     pb.GreeterClient
+	client     pb.OpenSecretShareClient
 }
 
 func NewCommands(client *client.KeyServerClient, prompt *Prompt) *Commands {
