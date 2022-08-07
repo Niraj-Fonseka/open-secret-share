@@ -17,10 +17,16 @@ import (
 type GPGTools struct {
 }
 
+//NewGPGTools
+//Create a new GPGTools client
 func NewGPGTools() *GPGTools {
 	return &GPGTools{}
 }
 
+/*
+	GenerateKeyPair
+	- generate gpg key pair
+*/
 func (g *GPGTools) GenerateKeyPair(username, email, comment string) []byte {
 	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
@@ -78,6 +84,10 @@ func (g *GPGTools) GenerateKeyPair(username, email, comment string) []byte {
 	return pub
 }
 
+/*
+	Encrypt
+	- encrypt a string of data with a public key
+*/
 func (g *GPGTools) Encrypt(data string, pubKey []byte) (string, error) {
 	// Read in public key
 	publicKeyring := bytes.NewReader(pubKey)
@@ -112,6 +122,10 @@ func (g *GPGTools) Encrypt(data string, pubKey []byte) (string, error) {
 	return encStr, nil
 }
 
+/*
+	Decrypt
+	- decrpyt an encrypted string using the private key
+*/
 func (g *GPGTools) Decrypt(encryptedString string) (string, error) {
 	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
 
