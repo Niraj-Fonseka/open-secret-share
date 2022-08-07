@@ -1,5 +1,6 @@
 *.gpg
 *.json
 oss/oss
-.env
+key-server/.env
+oss/.env
 .vscode
