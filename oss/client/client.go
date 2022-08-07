@@ -17,6 +17,8 @@ type KeyServerClient struct {
 	conn   *grpc.ClientConn
 }
 
+//NewKeyServerClient
+//Create a new OSS Client
 func NewKeyServerClient() *KeyServerClient {
 
 	serverEndpoint := os.Getenv("SERVER")
