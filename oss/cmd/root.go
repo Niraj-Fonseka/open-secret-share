@@ -9,12 +9,15 @@ import (
 	pkg "open-secret-share/oss/pkg"
 )
 
+//Execute
+//Initialize and Execute all the commands
 func Execute() {
 
 	client := client.NewKeyServerClient()
 	defer client.ConnClose()
 
 	prompt := pkg.NewPrompt()
-	pkg.NewCommands(client, prompt).InitializeCommands()
+	gpgTools := pkg.NewGPGTools()
+	pkg.NewCommands(client, prompt, gpgTools).InitializeCommands()
 
 }

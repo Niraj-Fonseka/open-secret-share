@@ -14,7 +14,14 @@ import (
 	"github.com/alokmenghrajani/gpgeez"
 )
 
-func GenerateKeyPair(username, email, comment string) []byte {
+type GPGTools struct {
+}
+
+func NewGPGTools() *GPGTools {
+	return &GPGTools{}
+}
+
+func (g *GPGTools) GenerateKeyPair(username, email, comment string) []byte {
 	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
 	key, err := gpgeez.CreateKey(username, comment, email, &config)
@@ -71,9 +78,8 @@ func GenerateKeyPair(username, email, comment string) []byte {
 	return pub
 }
 
-func Encrypt(data string, pubKey []byte) (string, error) {
+func (g *GPGTools) Encrypt(data string, pubKey []byte) (string, error) {
 	// Read in public key
-
 	publicKeyring := bytes.NewReader(pubKey)
 
 	entityList, err := openpgp.ReadKeyRing(publicKeyring)
@@ -106,7 +112,7 @@ func Encrypt(data string, pubKey []byte) (string, error) {
 	return encStr, nil
 }
 
-func Decrypt(encryptedString string) (string, error) {
+func (g *GPGTools) Decrypt(encryptedString string) (string, error) {
 	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
 
 	const passphrase = "" //go/crypto doesn't support passpharse yet
