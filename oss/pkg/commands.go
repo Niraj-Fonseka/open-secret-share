@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/spf13/cobra"
 )
 
@@ -85,8 +87,17 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 
 	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment)
 
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
+
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Email: email})
@@ -110,8 +121,17 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 	receiver := c.prompt.TriggerPrompt("email")
 	username := receiver
 
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
+
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	fmt.Print("----- establishing connection with the key server ----- ")
@@ -159,8 +179,17 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
 	messageID := c.prompt.TriggerPrompt("message id")
 
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
+
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	r, err := c.client.Recieve(ctx, &pb.RecieveRequest{MessageId: messageID})
