@@ -21,7 +21,10 @@ type GoogleStorage struct {
 
 func NewGoogleStorageClient() *GoogleStorage {
 	ctx := context.Background()
+
+	//client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))))
 	client, err := storage.NewClient(ctx)
+
 	if err != nil {
 		log.Fatalf("Unable to initialize the storage client %v ", err)
 	}
