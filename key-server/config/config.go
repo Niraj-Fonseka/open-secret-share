@@ -1,7 +1,7 @@
 package config
 
 type GoogleStorage struct {
-	GoogleServiceAccount string `env:"GOOGLE_APPLICATION_CREDENTIALS,required"`
+	GoogleServiceAccount string `env:"GOOGLE_CREDENTIALS,required"`
 	BucketName           string `env:"GOOGLE_STORAGE_BUCKET,required"`
 }
 
