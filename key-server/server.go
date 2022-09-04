@@ -7,6 +7,9 @@ import (
 	"log"
 	"net"
 
+	envconfig "github.com/sethvargo/go-envconfig"
+
+	"open-secret-share/key-server/config"
 	cache "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 	"open-secret-share/key-server/storageproviders"
@@ -66,8 +69,16 @@ func (s *server) Store(ctx context.Context, in *pb.StoreRequest) (*pb.StoreRespo
 }
 
 func main() {
+
+	ctx := context.Background()
+	var serverConfig config.Server
+
+	if err := envconfig.Process(ctx, &serverConfig); err != nil {
+		log.Fatal(err)
+	}
+
 	flag.Parse()
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", serverConfig.PORT))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
