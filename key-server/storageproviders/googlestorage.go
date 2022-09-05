@@ -3,11 +3,17 @@ package storageproviders
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"open-secret-share/key-server/config"
 	"time"
+
+	envconfig "github.com/sethvargo/go-envconfig"
+
+	"google.golang.org/api/option"
 
 	storage "cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"
@@ -19,14 +25,29 @@ type GoogleStorage struct {
 	bkt    *storage.BucketHandle
 }
 
+//Create a new google storage client
 func NewGoogleStorageClient() *GoogleStorage {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
+
+	var googleConfig config.GoogleStorage
+
+	if err := envconfig.Process(ctx, &googleConfig); err != nil {
+		log.Fatal(err)
+	}
+
+	//fetching encoded GOOGLE_APPLICATION_CREDENTIALS
+	decoded, err := base64.RawStdEncoding.DecodeString(googleConfig.GoogleServiceAccount)
+	if err != nil {
+		log.Fatalf("Unable to decode google service account %s ", err.Error())
+	}
+
+	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(decoded)))
+
 	if err != nil {
 		log.Fatalf("Unable to initialize the storage client %v ", err)
 	}
 
-	bkt := client.Bucket("oss-pubkeys")
+	bkt := client.Bucket(googleConfig.BucketName)
 
 	return &GoogleStorage{
 		ctx:    ctx,
@@ -47,7 +68,7 @@ func (s *GoogleStorage) Upload(userID string, pubkey []byte) error {
 
 	// Upload an object with storage.Writer.
 	wc := s.bkt.Object(userID + ".gpg").NewWriter(ctx)
-	wc.ChunkSize = 0 // note retries are not supported for chunk size 0.
+	wc.ChunkSize = 0
 
 	if _, err := io.Copy(wc, buf); err != nil {
 		return err

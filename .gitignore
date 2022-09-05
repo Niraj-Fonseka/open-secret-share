@@ -3,4 +3,4 @@
 oss/oss
 key-server/.env
 oss/.env
-.vscode
+.vscode/
