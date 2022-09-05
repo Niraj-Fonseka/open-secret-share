@@ -14,9 +14,9 @@ $(error GOOGLE_STORAGE_BUCKET is not set)
 endif
 
 
-server_auth_key  = ${AUTH_KEY}
-server_google_cred = ${GOOGLE_CREDENTIALS}
-server_bucket_name  = ${GOOGLE_STORAGE_BUCKET}
+auth_key=${AUTH_KEY}
+google_creds=${GOOGLE_CREDENTIALS}
+google_storage_bucket=${GOOGLE_STORAGE_BUCKET}
 
 build-go:
 	@echo "----- building go binary -----"
@@ -25,7 +25,7 @@ build-go:
 build-docker:
 	@echo "----- building docker image -----"
 	@docker build \
-	--build-arg google_creds=$(server_google_cred) \
-	--build-arg auth_key=$(server_auth_key) \
-	--build-arg google_storage_bucket=$(server_bucket_name) \
+	--build-arg google_creds=$(google_creds) \
+	--build-arg auth_key=$(auth_key) \
+	--build-arg google_storage_bucket=$(google_storage_bucket) \
 	-t oss-key-server:latest .
