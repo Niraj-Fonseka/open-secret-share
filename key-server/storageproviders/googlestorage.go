@@ -36,7 +36,7 @@ func NewGoogleStorageClient() *GoogleStorage {
 	}
 
 	//fetching encoded GOOGLE_APPLICATION_CREDENTIALS
-	decoded, err := base64.StdEncoding.DecodeString(googleConfig.GoogleServiceAccount)
+	decoded, err := base64.RawStdEncoding.DecodeString(googleConfig.GoogleServiceAccount)
 	if err != nil {
 		log.Fatalf("Unable to decode google service account %s ", err.Error())
 	}

@@ -13,7 +13,7 @@
 
 - Configurations
     - To use the existing Google Cloud Storage storage provider, create a service account in your google cloud account with proper permissions to view, create objects in a storage bucket
-    - When the service account is generated, base64 encode it and set the `GOOGLE_CREDENTIALS` environment variable
+    - When the service account is generated, base64 encode it and set the `GOOGLE_CREDENTIALS` environment variable. Make sure to disale wrap when you encode to base64 `ie: base64 -w=0 service_account.json > output.txt` 
     - Create a GCS Bucket
     - Set the `GOOGLE_STORAGE_BUCKET` environment variable with the name of the bucket.
     - [Generate / create a random string](https://generate-random.org/api-key-generator) to be used as a api key to communicate between clients and key-server.
