@@ -6,6 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+
+	"google.golang.org/grpc/codes"
+
+	"google.golang.org/grpc/metadata"
 
 	envconfig "github.com/sethvargo/go-envconfig"
 
@@ -68,6 +73,30 @@ func (s *server) Store(ctx context.Context, in *pb.StoreRequest) (*pb.StoreRespo
 	return &pb.StoreResponse{MessageId: messageID}, nil
 }
 
+func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	meta, ok := metadata.FromIncomingContext(ctx)
+
+	if !ok {
+		return nil, grpc.Errorf(codes.Unauthenticated, "missing context metadata")
+	}
+	// Take care: grpc internally reduce key values to lowercase
+	if len(meta["authorization"]) != 1 {
+		return nil, grpc.Errorf(codes.Unauthenticated, "invalid token")
+	}
+	if meta["authorization"][0] != key {
+		return nil, grpc.Errorf(codes.Unauthenticated, "invalid token")
+	}
+	return handler(ctx, req)
+}
+
 func main() {
 
 	ctx := context.Background()
@@ -85,7 +114,7 @@ func main() {
 
 	cache := cache.NewMemCache()
 	storage := storageproviders.NewGoogleStorageClient()
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.UnaryInterceptor(AuthInterceptor))
 	ossServer := &server{
 		Cache:   cache,
 		Storage: storage,

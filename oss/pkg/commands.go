@@ -9,6 +9,8 @@ import (
 	"os"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
 	"github.com/spf13/cobra"
 )
 
@@ -19,17 +21,21 @@ type Commands struct {
 	RecieveCMD *cobra.Command
 	prompt     *Prompt
 	client     pb.OpenSecretShareClient
+	gpgTools   *GPGTools
 }
 
-func NewCommands(client *client.KeyServerClient, prompt *Prompt) *Commands {
-
-	return &Commands{prompt: prompt, client: client.Client}
+//NewCommands
+//Create a Commands Client
+func NewCommands(client *client.KeyServerClient, prompt *Prompt, gpgtools *GPGTools) *Commands {
+	return &Commands{prompt: prompt, client: client.Client, gpgTools: gpgtools}
 }
 
+//InitializeCommands
+//Initialize all the commands
 func (c *Commands) InitializeCommands() *Commands {
 	var commands Commands
 
-	//List of commands
+	//root command
 	commands.Root = &cobra.Command{
 		Use:   "oss",
 		Short: "app for sharing secrets",
@@ -37,18 +43,21 @@ func (c *Commands) InitializeCommands() *Commands {
 		Run:   c.defaultHandler,
 	}
 
+	//command for initilaizing
 	commands.Init = &cobra.Command{
 		Use:   "init",
 		Short: "generate a new key pair and initialize the app",
 		Run:   c.initializeHandler,
 	}
 
+	//command for sending
 	commands.Send = &cobra.Command{
 		Use:   "send",
 		Short: "send a message to a user",
 		Run:   c.sendSecretHandler,
 	}
 
+	//command for receiving
 	commands.RecieveCMD = &cobra.Command{
 		Use:   "recieve",
 		Short: "receive a message given id",
@@ -66,15 +75,29 @@ func (c *Commands) InitializeCommands() *Commands {
 	return &commands
 }
 
+/*
+	initializeHandler
+	- get user input for username, email and comment and generate a pub/pvt key pair
+	- store the pub key in the key server and store the private key locally
+*/
 func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	username := c.prompt.TriggerPrompt("username")
 	email := c.prompt.TriggerPrompt("email")
 	comment := c.prompt.TriggerPrompt("comment")
 
-	pubKey := GenerateKeyPair(username, email, comment)
+	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment)
+
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
 
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*120)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Email: email})
@@ -85,13 +108,30 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	fmt.Println(r.Message)
 }
 
+/*
+	sendSecretHandler
+	- prompt the user for the reciever's email
+	- recieve the public key from the key server
+	- prompt the user for the message to be sent
+	- encrpyt the message using reciever's pub key
+	- store in memory cache. generate a unique id
+*/
 func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 
 	receiver := c.prompt.TriggerPrompt("email")
 	username := receiver
 
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
+
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	fmt.Print("----- establishing connection with the key server ----- ")
@@ -112,7 +152,7 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 	fmt.Println("connection established successfully")
 	message := c.prompt.TriggerPrompt("message")
 
-	encrypted, err := Encrypt(message, pubKeyRecived)
+	encrypted, err := c.gpgTools.Encrypt(message, pubKeyRecived)
 
 	if err != nil {
 		log.Println(err)
@@ -130,11 +170,26 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 
 }
 
+/*
+	recieveHandler
+	- prompt the user for the message id
+	- receive the encrypted message from the key server
+	- decrypt the data using the reciever's private key
+*/
 func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
 	messageID := c.prompt.TriggerPrompt("message id")
 
+	key := os.Getenv("AUTH_KEY")
+
+	if len(key) == 0 {
+		fmt.Println("no authentication found ")
+		os.Exit(1)
+	}
+
+	md := metadata.Pairs("Authorization", key)
+
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
 	r, err := c.client.Recieve(ctx, &pb.RecieveRequest{MessageId: messageID})
@@ -144,12 +199,16 @@ func (c *Commands) recieveHandler(cmd *cobra.Command, args []string) {
 
 	encData := r.GetData()
 
-	decrypted, err := Decrypt(encData)
+	decrypted, err := c.gpgTools.Decrypt(encData)
 
 	fmt.Println(decrypted)
 
 }
 
+/*
+	defaultHandler
+	- list out the available commands
+*/
 func (c *Commands) defaultHandler(cmd *cobra.Command, args []string) {
 	fmt.Println("Hello from Open Secret Share !")
 	fmt.Println("run oss init - to initialize the app")
