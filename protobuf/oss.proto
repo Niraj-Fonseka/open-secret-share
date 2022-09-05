@@ -9,6 +9,7 @@ service OpenSecretShare {
   rpc Recieve(RecieveRequest) returns (RecieveResponse) {} 
   rpc GetPublicKey(GetPubKeyRequest) returns (GetPubKeyResponse) {}
   rpc Store(StoreRequest) returns (StoreResponse) {}
+  
 }
 
 
@@ -34,11 +35,21 @@ message RecieveResponse {
 // ---- Initialize ----
 message InitializeRequest {
   bytes pubkey = 1;
-  string email = 2;
+  string username = 2;
 }
 
 message InitializeResponse {
   string message = 1;
+}
+
+
+//---- Peek ----
+message PeekRequest {
+  string username = 1;
+}
+
+message PeekResponse {
+  bool exists = 1;
 }
 
 

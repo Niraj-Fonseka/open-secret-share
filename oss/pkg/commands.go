@@ -100,7 +100,7 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
-	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Email: email})
+	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Username: username})
 	if err != nil {
 		log.Fatalf("Error happened at initialization.  : %v", err)
 	}
