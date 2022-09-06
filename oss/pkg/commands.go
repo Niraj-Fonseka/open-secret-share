@@ -85,7 +85,9 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	email := c.prompt.TriggerPrompt("email")
 	comment := c.prompt.TriggerPrompt("comment")
 
-	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment)
+	uniqueID := c.gpgTools.utils.GenerateUniqueKey()
+
+	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment, uniqueID)
 
 	key := os.Getenv("AUTH_KEY")
 
@@ -100,7 +102,7 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
-	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Username: username})
+	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, UniqueId: c.gpgTools.utils.GenerateStorageID(username, uniqueID)})
 	if err != nil {
 		log.Fatalf("Error happened at initialization.  : %v", err)
 	}
@@ -118,7 +120,7 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 */
 func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 
-	receiver := c.prompt.TriggerPrompt("email")
+	receiver := c.prompt.TriggerPrompt("reciever username")
 	username := receiver
 
 	key := os.Getenv("AUTH_KEY")

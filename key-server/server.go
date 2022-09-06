@@ -18,12 +18,9 @@ import (
 	cache "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 	"open-secret-share/key-server/storageproviders"
+	"open-secret-share/oss/pkg"
 
 	"google.golang.org/grpc"
-)
-
-var (
-	port = flag.Int("port", 50051, "The server port")
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -31,6 +28,7 @@ type server struct {
 	pb.UnimplementedOpenSecretShareServer
 	Cache   *cache.MemCache
 	Storage storageproviders.StorageProvider
+	Utils   *pkg.Utils
 }
 
 func (s *server) Recieve(ctx context.Context, in *pb.RecieveRequest) (*pb.RecieveResponse, error) {
@@ -57,8 +55,9 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
-	email := in.GetEmail()
-	err := s.Storage.Upload(email, pubKey)
+	uniqueID := in.GetUniqueId()
+
+	err := s.Storage.Upload(uniqueID, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{Message: "failed"}, err
 	}
@@ -113,11 +112,13 @@ func main() {
 	}
 
 	cache := cache.NewMemCache()
+	utils := pkg.NewUtils()
 	storage := storageproviders.NewGoogleStorageClient()
 	s := grpc.NewServer(grpc.UnaryInterceptor(AuthInterceptor))
 	ossServer := &server{
 		Cache:   cache,
 		Storage: storage,
+		Utils:   utils,
 	}
 
 	pb.RegisterOpenSecretShareServer(s, ossServer)

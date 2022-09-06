@@ -1,7 +1,11 @@
 package pkg
 
 import (
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 )
@@ -24,4 +28,23 @@ func (u *Utils) GenerateUniqueKey() string {
 		sb.WriteByte(charset[rand.Intn(len(charset))])
 	}
 	return sb.String()
+}
+
+func (u *Utils) GenerateStorageID(username, uniqueID string) string {
+	comb := fmt.Sprintf("%s-%s", username, uniqueID)
+
+	return base64.RawStdEncoding.EncodeToString([]byte(comb))
+}
+
+func (u *Utils) GetStorageID(username string) string {
+	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
+
+	uniqueID, err := ioutil.ReadFile(path + "/config.txt")
+
+	if err != nil {
+		fmt.Printf("unable to read the configuration file. Please re-initialize")
+		os.Exit(1)
+	}
+
+	return base64.RawStdEncoding.EncodeToString([]byte(fmt.Sprintf("%s-%s", username, string(uniqueID))))
 }
