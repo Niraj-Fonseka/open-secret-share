@@ -30,7 +30,7 @@ func NewGPGTools(utils *Utils) *GPGTools {
 	GenerateKeyPair
 	- generate gpg key pair
 */
-func (g *GPGTools) GenerateKeyPair(username, email, comment, uniqueId string) []byte {
+func (g *GPGTools) GenerateKeyPair(username, email, comment string) []byte {
 	path := fmt.Sprintf("%s/.oss", os.Getenv("HOME"))
 	config := gpgeez.Config{Expiry: 365 * 24 * time.Hour}
 	key, err := gpgeez.CreateKey(username, comment, email, &config)
@@ -78,14 +78,6 @@ func (g *GPGTools) GenerateKeyPair(username, email, comment, uniqueId string) []
 	}
 	pvt_err := ioutil.WriteFile(path+"/oss_pvt.gpg", pvt, 0666)
 	if pvt_err != nil {
-		log.Printf("error when writing the private key : %v\n", pvt_err)
-		os.Exit(1)
-
-		return []byte{}
-	}
-
-	config_err := ioutil.WriteFile(path+"/config.txt", pvt, 0666)
-	if config_err != nil {
 		log.Printf("error when writing the private key : %v\n", pvt_err)
 		os.Exit(1)
 

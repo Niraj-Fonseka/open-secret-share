@@ -85,9 +85,7 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	email := c.prompt.TriggerPrompt("email")
 	comment := c.prompt.TriggerPrompt("comment")
 
-	uniqueID := c.gpgTools.utils.GenerateUniqueKey()
-
-	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment, uniqueID)
+	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment)
 
 	key := os.Getenv("AUTH_KEY")
 
@@ -102,7 +100,9 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(metadata.NewOutgoingContext(context.Background(), md), time.Second*120)
 	defer cancel()
 
-	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, UniqueId: c.gpgTools.utils.GenerateStorageID(username, uniqueID)})
+	//peek first
+
+	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Username: c.gpgTools.utils.SanitizeUsername(username)})
 	if err != nil {
 		log.Fatalf("Error happened at initialization.  : %v", err)
 	}

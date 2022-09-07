@@ -35,7 +35,7 @@ message RecieveResponse {
 // ---- Initialize ----
 message InitializeRequest {
   bytes pubkey = 1;
-  string unique_id = 2;
+  string username = 2;
 }
 
 message InitializeResponse {

@@ -15,10 +15,9 @@ import (
 	envconfig "github.com/sethvargo/go-envconfig"
 
 	"open-secret-share/key-server/config"
-	cache "open-secret-share/key-server/pkg"
+	pkg "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 	"open-secret-share/key-server/storageproviders"
-	"open-secret-share/oss/pkg"
 
 	"google.golang.org/grpc"
 )
@@ -26,7 +25,7 @@ import (
 // server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedOpenSecretShareServer
-	Cache   *cache.MemCache
+	Cache   *pkg.MemCache
 	Storage storageproviders.StorageProvider
 	Utils   *pkg.Utils
 }
@@ -55,9 +54,9 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
-	uniqueID := in.GetUniqueId()
+	username := in.GetUsername()
 
-	err := s.Storage.Upload(uniqueID, pubKey)
+	err := s.Storage.Upload(username, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{Message: "failed"}, err
 	}
@@ -111,7 +110,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	cache := cache.NewMemCache()
+	cache := pkg.NewMemCache()
 	utils := pkg.NewUtils()
 	storage := storageproviders.NewGoogleStorageClient()
 	s := grpc.NewServer(grpc.UnaryInterceptor(AuthInterceptor))
