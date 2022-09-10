@@ -7,6 +7,7 @@ import (
 	"open-secret-share/oss/client"
 	pb "open-secret-share/oss/protobuf"
 	"os"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc/metadata"
@@ -94,7 +95,8 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 	email := c.prompt.TriggerPrompt("email")
 	comment := c.prompt.TriggerPrompt("comment")
 
-	pubKey := c.gpgTools.GenerateKeyPair(username, email, comment)
+	sanitizedUN := c.gpgTools.utils.SanitizeUsername(username)
+	pubKey := c.gpgTools.GenerateKeyPair(sanitizedUN, strings.TrimSpace(email), strings.TrimSpace(comment))
 
 	key := os.Getenv("AUTH_KEY")
 
@@ -113,7 +115,14 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 
 	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Username: c.gpgTools.utils.SanitizeUsername(username)})
 	if err != nil {
-		log.Fatalf("Error happened at initialization.  : %v", err)
+		fmt.Println("Error happened at initialization")
+		os.Exit(2)
+	}
+
+	err = c.utils.WriteConfig(sanitizedUN)
+	if err != nil {
+		fmt.Println("Error happened at initialization")
+		os.Exit(3)
 	}
 
 	fmt.Println(r.Message)
