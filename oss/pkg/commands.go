@@ -115,13 +115,13 @@ func (c *Commands) initializeHandler(cmd *cobra.Command, args []string) {
 
 	r, err := c.client.Initialize(ctx, &pb.InitializeRequest{Pubkey: pubKey, Username: c.gpgTools.utils.SanitizeUsername(username)})
 	if err != nil {
-		fmt.Println("Error happened at initialization")
+		fmt.Printf("Error happened at initialization : %s", err.Error())
 		os.Exit(2)
 	}
 
 	err = c.utils.WriteConfig(sanitizedUN)
 	if err != nil {
-		fmt.Println("Error happened at initialization")
+		fmt.Printf("Error happened at initialization : %s", err.Error())
 		os.Exit(3)
 	}
 

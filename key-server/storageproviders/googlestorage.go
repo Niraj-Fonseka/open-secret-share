@@ -33,12 +33,6 @@ func NewGoogleStorageClient() *GoogleStorage {
 		log.Fatal(err)
 	}
 
-	//fetching encoded GOOGLE_APPLICATION_CREDENTIALS
-	// decoded, err := base64.RawStdEncoding.DecodeString(googleConfig.GoogleServiceAccount)
-	// if err != nil {
-	// 	log.Fatalf("Unable to decode google service account %s ", err.Error())
-	// }
-
 	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(googleConfig.GoogleServiceAccount)))
 
 	if err != nil {
@@ -112,7 +106,7 @@ func (s *GoogleStorage) Download(userID string) ([]byte, error) {
 	// if len(names) == 0 {
 	// 	return []byte{}, fmt.Errorf("reciever not found ")
 	// }
-	rc, err := s.bkt.Object(userID).NewReader(s.ctx)
+	rc, err := s.bkt.Object(userID + ".gpg").NewReader(s.ctx)
 	if err != nil {
 		return []byte{}, err
 	}

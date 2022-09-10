@@ -7,7 +7,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strings"
 
 	"google.golang.org/grpc/codes"
 
@@ -62,8 +61,8 @@ func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.
 	fmt.Println("In initialize username :", username)
 	fmt.Println("error :", err)
 
-	//if the object doesn't exist we should continue
-	if err != nil && !strings.Contains(err.Error(), "storage: object doesn't exist") {
+	//if the object doesn't exist we should continues
+	if err == nil {
 		return &pb.InitializeResponse{Message: "failed"}, fmt.Errorf("public key with the same username exists. Please select a different username")
 	}
 
