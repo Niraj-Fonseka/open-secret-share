@@ -17,7 +17,9 @@ func Execute() {
 	defer client.ConnClose()
 
 	prompt := pkg.NewPrompt()
-	gpgTools := pkg.NewGPGTools()
-	pkg.NewCommands(client, prompt, gpgTools).InitializeCommands()
+	utils := pkg.NewUtils()
+	gpgTools := pkg.NewGPGTools(utils)
+
+	pkg.NewCommands(client, prompt, gpgTools, utils).InitializeCommands()
 
 }

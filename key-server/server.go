@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 
@@ -46,7 +47,7 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 	data, err := s.Storage.Download(username)
 
 	if err != nil {
-		return &pb.GetPubKeyResponse{}, err
+		return &pb.GetPubKeyResponse{}, fmt.Errorf("reciever doesn't exist. Please make sure the username is correct")
 	}
 
 	return &pb.GetPubKeyResponse{Pubkey: data}, nil
@@ -56,7 +57,15 @@ func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.
 	pubKey := in.GetPubkey()
 	username := in.GetUsername()
 
-	err := s.Storage.Upload(username, pubKey)
+	_, err := s.Storage.Download(username)
+
+	fmt.Println("In initialize username :", username)
+	if err != nil && strings.Contains(err.Error(), "storage: object doesn't exist") {
+		return &pb.InitializeResponse{Message: "failed"}, fmt.Errorf("public key with the same username exists. Please select a different username")
+	}
+
+	fmt.Println("all is good we are continuing")
+	err = s.Storage.Upload(username, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{Message: "failed"}, err
 	}
