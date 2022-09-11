@@ -73,37 +73,8 @@ func (s *GoogleStorage) Upload(userID string, pubkey []byte) error {
 	return nil
 }
 
-// func (s *GoogleStorage) Peek(filename string) (bool, error) {
-// 	ctx, cancel := context.WithTimeout(s.ctx, time.Second*120)
-
-// 	defer cancel()
-
-// 	bucket := s.bkt.
-// }
-
 func (s *GoogleStorage) Download(userID string) ([]byte, error) {
 
-	//ctx, cancel := context.WithTimeout(s.ctx, time.Second*120)
-
-	//query := &storage.Query{Prefix: userID}
-
-	// var names []string
-	// it := s.bkt.Object(ctx, query)
-	// for {
-	// 	attrs, err := it.Next()
-	// 	if err == iterator.Done {
-	// 		break
-	// 	}
-	// 	if err != nil {
-	// 		return []byte{}, err
-	// 	}
-	// 	names = append(names, attrs.Name)
-	// }
-	// defer cancel()
-
-	// if len(names) == 0 {
-	// 	return []byte{}, fmt.Errorf("reciever not found ")
-	// }
 	rc, err := s.bkt.Object(userID + ".gpg").NewReader(s.ctx)
 	if err != nil {
 		return []byte{}, err
