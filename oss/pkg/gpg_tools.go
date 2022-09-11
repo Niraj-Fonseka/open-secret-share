@@ -15,12 +15,15 @@ import (
 )
 
 type GPGTools struct {
+	utils *Utils
 }
 
 //NewGPGTools
 //Create a new GPGTools client
-func NewGPGTools() *GPGTools {
-	return &GPGTools{}
+func NewGPGTools(utils *Utils) *GPGTools {
+	return &GPGTools{
+		utils: utils,
+	}
 }
 
 /*

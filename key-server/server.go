@@ -15,22 +15,19 @@ import (
 	envconfig "github.com/sethvargo/go-envconfig"
 
 	"open-secret-share/key-server/config"
-	cache "open-secret-share/key-server/pkg"
+	pkg "open-secret-share/key-server/pkg"
 	pb "open-secret-share/key-server/protobuf"
 	"open-secret-share/key-server/storageproviders"
 
 	"google.golang.org/grpc"
 )
 
-var (
-	port = flag.Int("port", 50051, "The server port")
-)
-
 // server is used to implement helloworld.GreeterServer.
 type server struct {
 	pb.UnimplementedOpenSecretShareServer
-	Cache   *cache.MemCache
+	Cache   *pkg.MemCache
 	Storage storageproviders.StorageProvider
+	Utils   *pkg.Utils
 }
 
 func (s *server) Recieve(ctx context.Context, in *pb.RecieveRequest) (*pb.RecieveResponse, error) {
@@ -49,7 +46,7 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 	data, err := s.Storage.Download(username)
 
 	if err != nil {
-		return &pb.GetPubKeyResponse{}, err
+		return &pb.GetPubKeyResponse{}, fmt.Errorf("reciever doesn't exist. Please make sure the username is correct")
 	}
 
 	return &pb.GetPubKeyResponse{Pubkey: data}, nil
@@ -57,8 +54,16 @@ func (s *server) GetPublicKey(ctx context.Context, in *pb.GetPubKeyRequest) (*pb
 
 func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.InitializeResponse, error) {
 	pubKey := in.GetPubkey()
-	email := in.GetEmail()
-	err := s.Storage.Upload(email, pubKey)
+	username := in.GetUsername()
+
+	_, err := s.Storage.Download(username)
+
+	//if the object doesn't exist we should continues
+	if err == nil {
+		return &pb.InitializeResponse{Message: "failed"}, fmt.Errorf("public key with the same username exists. Please select a different username")
+	}
+
+	err = s.Storage.Upload(username, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{Message: "failed"}, err
 	}
@@ -112,12 +117,14 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	cache := cache.NewMemCache()
+	cache := pkg.NewMemCache()
+	utils := pkg.NewUtils()
 	storage := storageproviders.NewGoogleStorageClient()
 	s := grpc.NewServer(grpc.UnaryInterceptor(AuthInterceptor))
 	ossServer := &server{
 		Cache:   cache,
 		Storage: storage,
+		Utils:   utils,
 	}
 
 	pb.RegisterOpenSecretShareServer(s, ossServer)
