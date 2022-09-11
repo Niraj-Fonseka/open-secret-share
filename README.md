@@ -1,9 +1,11 @@
 # Open Secret Share 
 
-- Open Secret Share is a tool for sharing secrets with GPG
-
+- Self hosted secret sharing with gpg
 
 ### How it works
+
+![arch diagram](./docs/OSS.jpeg)
+
 
 ## Self Hosting
 
@@ -39,13 +41,4 @@
 
 - Create the storage provider in the `key-server/storageproviders` directory that satistifes the [StorageProvider](https://github.com/Niraj-Fonseka/open-secret-share/blob/main/key-server/storageproviders/storage.go#L3) interface
 - Initialize and add your storage provider when server is created https://github.com/Niraj-Fonseka/open-secret-share/blob/main/key-server/server.go#L109
-
-
-
-
-
-
-## Architecture / Flow diagram
-
-![arch diagram](./docs/OSS.svg)
 
