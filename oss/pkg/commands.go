@@ -140,7 +140,7 @@ func (c *Commands) sendSecretHandler(cmd *cobra.Command, args []string) {
 
 	c.utils.CheckInitialized()
 	receiver := c.prompt.TriggerPrompt("reciever username")
-	username := receiver
+	username := c.utils.SanitizeUsername(receiver)
 
 	key := os.Getenv("AUTH_KEY")
 

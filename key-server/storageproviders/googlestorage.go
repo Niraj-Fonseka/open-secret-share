@@ -3,7 +3,6 @@ package storageproviders
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -54,7 +53,6 @@ func (s *GoogleStorage) Close() {
 
 func (s *GoogleStorage) Upload(userID string, pubkey []byte) error {
 
-	fmt.Println("Upload : ", userID)
 	buf := bytes.NewBuffer(pubkey)
 
 	ctx, cancel := context.WithTimeout(s.ctx, time.Second*120)

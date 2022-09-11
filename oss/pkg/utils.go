@@ -89,14 +89,14 @@ func (u *Utils) CheckInitialized() {
 
 	if os.IsNotExist(err) {
 		fmt.Println("invalid configuration. Please re-initialize")
-		os.Exit(2)
+		os.Exit(3)
 	}
 
 	_, err = os.Stat(fmt.Sprintf("%s/%s", path, "oss_pvt.gpg"))
 
 	if os.IsNotExist(err) {
 		fmt.Println("invalid configuration. Please re-initialize")
-		os.Exit(3)
+		os.Exit(4)
 	}
 
 }

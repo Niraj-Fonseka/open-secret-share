@@ -58,15 +58,11 @@ func (s *server) Initialize(ctx context.Context, in *pb.InitializeRequest) (*pb.
 
 	_, err := s.Storage.Download(username)
 
-	fmt.Println("In initialize username :", username)
-	fmt.Println("error :", err)
-
 	//if the object doesn't exist we should continues
 	if err == nil {
 		return &pb.InitializeResponse{Message: "failed"}, fmt.Errorf("public key with the same username exists. Please select a different username")
 	}
 
-	fmt.Println("all is good we are continuing")
 	err = s.Storage.Upload(username, pubKey)
 	if err != nil {
 		return &pb.InitializeResponse{Message: "failed"}, err
