@@ -5,7 +5,6 @@
     - Self hostable 
     - Messages are always encrypted locally
 
-
 ### Demo 
 - These two recordings were done in two different machines. One acting as a sender and the other as a reciever. I recommend watching them at the same time
 - sender
