@@ -9,10 +9,10 @@
 ### Demo 
 - These two recordings were done in two different machines. One acting as a sender and the other as a reciever. I recommend watching them at the same time
 - sender
-<a href="https://asciinema.org/a/zMQl6kCq5cAvLl8ouT0Qg4RV9" target="_blank"><img src="https://asciinema.org/a/zMQl6kCq5cAvLl8ouT0Qg4RV9.svg" /></a>
+[![asciicast](https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.svg)](https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh)
 
 - reciever 
-<a href="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh" target="_blank"><img src="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.svg" /></a>
+<script id="asciicast-I00W8DlDuSyAO8InKItwD8Bbh" src="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.js" async></script>
 
 ### How it works
 
