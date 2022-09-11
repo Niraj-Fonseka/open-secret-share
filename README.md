@@ -1,19 +1,24 @@
 # Open Secret Share 
 
-- Open Secret Share is a tool for sharing secrets with GPG
-
+- Self hosted secret sharing with gpg
+- Quick Notes
+    - Self hostable 
+    - Messages are always encrypted locally
 
 ### How it works
+
+![arch diagram](./docs/OSS.jpeg)
+
 
 ## Self Hosting
 
 ### key-server 
 
-- This is a grpc server that will interface with the storage provider and the oss clients. This also will maintain the temporary in memory cache of the messages.
+- This is a grpc server that will interface with the storage provider and the oss clients. This also will maintain the temporary in memory cache of encrypted messages.
 
 - Configurations
     - To use the existing Google Cloud Storage storage provider, create a service account in your google cloud account with proper permissions to view, create objects in a storage bucket
-    - When the service account is generated, base64 encode it and set the `GOOGLE_CREDENTIALS` environment variable. Make sure to disale wrap when you encode to base64 `ie: base64 -w 0 service_account.json > service_account_encoded.txt` 
+    - When the service account is generated, base64 encode it and set the `GOOGLE_CREDENTIALS` environment variable. ( Make sure to disale wrap when you encode to base64 `ie: base64 -w 0 service_account.json > service_account_encoded.txt`)
     - Create a GCS Bucket
     - Set the `GOOGLE_STORAGE_BUCKET` environment variable with the name of the bucket.
     - [Generate / create a random string](https://generate-random.org/api-key-generator) to be used as a api key to communicate between clients and key-server.
@@ -26,7 +31,7 @@
     - without docker 
         - `make go`
 
-### oss 
+### oss client
 - Configurations
     - Set the `SERVER` environment variable with the key-server url
     - Set the `AUTH_KEY` environment variable with the same string that was generated when setting up the api
@@ -37,15 +42,7 @@
 
 ### Adding a new storage provider 
 
+- if you want to use a different storage provider other than google cloud storage
 - Create the storage provider in the `key-server/storageproviders` directory that satistifes the [StorageProvider](https://github.com/Niraj-Fonseka/open-secret-share/blob/main/key-server/storageproviders/storage.go#L3) interface
 - Initialize and add your storage provider when server is created https://github.com/Niraj-Fonseka/open-secret-share/blob/main/key-server/server.go#L109
-
-
-
-
-
-
-## Architecture / Flow diagram
-
-![arch diagram](./docs/OSS.svg)
 
