@@ -12,7 +12,7 @@
 [![asciicast](https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.svg)](https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh)
 
 - reciever 
-<script id="asciicast-I00W8DlDuSyAO8InKItwD8Bbh" src="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.js" async></script>
+<a href="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh" target="_blank"><img src="https://asciinema.org/a/I00W8DlDuSyAO8InKItwD8Bbh.svg" /></a>
 
 ### How it works
 
