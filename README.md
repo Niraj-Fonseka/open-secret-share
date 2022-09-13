@@ -1,12 +1,16 @@
 # Open Secret Share 
 
 - Self hosted secret sharing with gpg
+- Two components
+    - key-server : interfaces with the storage provider for fetching and storing public keys. And temporarily stores encrypted data.
+    - oss client : binary that will live in the sender / reciever's machine that will be used for encrypting / decrypting messages as well as generating gpg key pairs.
 
 - TLDR
     - Self hostable 
     - Private keys are always stored locally
     - Encryption always happens locally
     - Add your own storage provider
+
 
 ### Demo 
 - These two recordings were done in two different machines. One acting as a sender and the other as a reciever. I recommend watching them at the same time
