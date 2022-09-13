@@ -1,9 +1,12 @@
 # Open Secret Share 
 
 - Self hosted secret sharing with gpg
-- Quick Notes
+
+- TLDR
     - Self hostable 
-    - Messages are always encrypted locally
+    - Private keys are always stored locally
+    - Encryption always happens locally
+    - Add your own storage provider
 
 ### Demo 
 - These two recordings were done in two different machines. One acting as a sender and the other as a reciever. I recommend watching them at the same time
